@@ -241,6 +241,9 @@ def main():
     logging.basicConfig(level=config.logging_level, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
     logger.info(f"Running with config: {config}")
     nwb_paths = config.nwb_paths
+    if len(nwb_paths) == 0:
+        logger.warning("No remote NWB paths provided and no NWBs found in attached assets. Exiting.")
+        return
     if config.sample_n_files is not None and config.sample_n_files < len(nwb_paths):
         nwb_paths = random.sample(nwb_paths, config.sample_n_files)
         logger.info(f"Sampled {config.sample_n_files} of {len(config.nwb_paths)} files")
