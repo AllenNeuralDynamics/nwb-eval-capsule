@@ -1,1 +1,0 @@
-main should load config from pydantic settings with [logging_level, nwb_paths (list[str] | None),  ] 
