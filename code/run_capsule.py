@@ -165,7 +165,11 @@ def get_nwb_paths_from_attached_assets() -> list[upath.UPath]:
 
 
 class Config(pydantic_settings.BaseSettings):
-    model_config = pydantic_settings.SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = pydantic_settings.SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8",
+        cli_parse_args=True,
+    )
 
     nwb_paths: list[upath.UPath] = pydantic.Field(
         default_factory=get_nwb_paths_from_attached_assets,
