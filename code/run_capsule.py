@@ -171,7 +171,9 @@ class Config(pydantic_settings.BaseSettings):
     anthropic_api_key: pydantic.SecretStr | None = None
 
 def write_to_json(data: dict, path: upath.UPath, prefix: str) -> upath.UPath:
-    output_path = RESULTS_DIR / f"{prefix}_{path.stem}.json"
+    output_dir = RESULTS_DIR / prefix
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{path.stem}.json"
     logger.info(f"Writing to {output_path}")
     output_path.write_text(json.dumps(data, indent=2))
     return output_path
@@ -179,17 +181,16 @@ def write_to_json(data: dict, path: upath.UPath, prefix: str) -> upath.UPath:
 def _build_file_context() -> str:
     """Read all previously-written JSON results and format them as LLM context."""
     sections: list[str] = []
-    for pattern, heading in [
-        ("attrs_*.json", "Metadata (attributes per internal path)"),
-        ("internal_paths_*.json", "Internal paths (data containers)"),
+    for subfolder, heading in [
+        ("attrs", "Metadata (attributes per internal path)"),
+        ("internal_paths", "Internal paths (data containers)"),
     ]:
-        files = sorted(RESULTS_DIR.glob(pattern))
+        files = sorted((RESULTS_DIR / subfolder).glob("*.json")) if (RESULTS_DIR / subfolder).exists() else []
         if not files:
             continue
         sections.append(f"# {heading}\n")
         for f in files:
-            stem = f.stem.split("_", 1)[1]  # strip prefix to get original filename
-            sections.append(f"## File: {stem}\n```json\n{f.read_text()}\n```\n")
+            sections.append(f"## File: {f.stem}\n```json\n{f.read_text()}\n```\n")
     return "\n".join(sections)
 
 
@@ -223,7 +224,9 @@ def write_llm_summaries(model: str, config: Config) -> None:
         if not text_blocks:
             logger.warning(f"No text in LLM response for {category}")
             continue
-        output_path = RESULTS_DIR / f"summary_{category}.md"
+        summary_dir = RESULTS_DIR / "summary"
+        summary_dir.mkdir(parents=True, exist_ok=True)
+        output_path = summary_dir / f"{category}.md"
         output_path.write_text("\n\n".join(text_blocks))
         logger.info(f"Wrote summary to {output_path}")
 
