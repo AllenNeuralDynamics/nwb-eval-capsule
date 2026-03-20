@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 
 import anthropic
 import lazynwb
@@ -169,6 +170,10 @@ class Config(pydantic_settings.BaseSettings):
     logging_level: str = "INFO"
     llm_model: str = "claude-sonnet-4-6-20250514"
     anthropic_api_key: pydantic.SecretStr | None = None
+    sample_n_files: int | None = pydantic.Field(
+        default=None,
+        description="If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
+    )
 
 def write_to_json(data: dict, path: upath.UPath, prefix: str) -> upath.UPath:
     output_dir = RESULTS_DIR / prefix
@@ -235,7 +240,11 @@ def main():
     config = Config()
     logging.basicConfig(level=config.logging_level, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
     logger.info(f"Running with config: {config}")
-    for path in config.nwb_paths:
+    nwb_paths = config.nwb_paths
+    if config.sample_n_files is not None and config.sample_n_files < len(nwb_paths):
+        nwb_paths = random.sample(nwb_paths, config.sample_n_files)
+        logger.info(f"Sampled {config.sample_n_files} of {len(config.nwb_paths)} files")
+    for path in nwb_paths:
         logger.info(f"Processing NWB file at path: {path}")
         write_to_json(lazynwb.get_sub_attrs(path, exclude_private=True, exclude_empty=True), path, "attrs")
         write_to_json(list(lazynwb.get_internal_paths(path).keys()), path, "internal_paths")
