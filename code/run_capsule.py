@@ -168,10 +168,10 @@ class Config(pydantic_settings.BaseSettings):
         description="Comma-separated list of S3 paths to NWB files to evaluate. By default, will include all NWB files found in the attached assets.",
     )
     logging_level: str = "INFO"
-    llm_model: str = "claude-sonnet-4-6-20250514"
+    llm_model: str = "claude-opus-4-6"
     anthropic_api_key: pydantic.SecretStr | None = None
     sample_n_files: int | None = pydantic.Field(
-        default=None,
+        default=5,
         description="If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
     )
 
