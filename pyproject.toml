@@ -1,0 +1,11 @@
+[project]
+name = "nwb-eval-capsule"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "anthropic>=0.86.0",
+    "lazynwb>=0.2.83",
+    "pydantic-settings>=2.13.1",
+]
