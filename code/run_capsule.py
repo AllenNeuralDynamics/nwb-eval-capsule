@@ -160,6 +160,8 @@ def get_nwb_paths_from_attached_assets() -> list[upath.UPath]:
 
 
 class Config(pydantic_settings.BaseSettings):
+    model_config = pydantic_settings.SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
     nwb_paths: list[upath.UPath] = pydantic.Field(
         default_factory=get_nwb_paths_from_attached_assets,
         description="Comma-separated list of S3 paths to NWB files to evaluate. By default, will include all NWB files found in the attached assets.",
