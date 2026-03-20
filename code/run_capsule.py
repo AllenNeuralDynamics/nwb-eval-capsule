@@ -175,7 +175,7 @@ class Config(pydantic_settings.BaseSettings):
         description="If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
     )
 
-def write_to_json(data: dict, path: upath.UPath, prefix: str) -> upath.UPath:
+def write_to_json(data: dict | list[str], path: upath.UPath, prefix: str) -> upath.UPath:
     output_dir = RESULTS_DIR / prefix
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"{path.stem}.json"
