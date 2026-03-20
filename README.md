@@ -39,6 +39,41 @@ An `ANTHROPIC_API_KEY` must be available as a secret (via `.env` or environment
 variable). If missing, metadata extraction still runs but LLM summaries are
 skipped.
 
+## Launching remotely
+
+Use `code/launch.py` to run the capsule via the Code Ocean API. Requires the
+`codeocean` Python SDK.
+
+```bash
+# With S3 paths
+python code/launch.py \
+  --nwb-s3-paths s3://bucket/file1.nwb \
+  --nwb-s3-paths s3://bucket/file2.nwb
+
+# With a data asset (mounted at its name)
+python code/launch.py --data-asset-id <asset-id>
+
+# Both
+python code/launch.py --data-asset-id <asset-id> --nwb-s3-paths s3://bucket/extra.nwb
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `--codeocean-domain` | *(from env)* | Code Ocean domain URL |
+| `--codeocean-token` | *(from env)* | API access token |
+| `--capsule-id` | `dae9c3fd-...` | Capsule ID to run |
+| `--nwb-s3-paths` | *(none)* | S3 paths to NWB files (repeatable) |
+| `--data-asset-id` | *(none)* | Data asset ID to attach |
+| `--capsule-version` | *(latest)* | Specific capsule version |
+| `--timeout` | *(none)* | Max seconds to wait |
+| `--polling-interval` | `30` | Seconds between status checks |
+| `--sample-n-files` | *(capsule default)* | Randomly sample this many NWB files |
+| `--llm-model` | *(capsule default)* | Anthropic model ID for evaluation |
+| `--logging-level` | *(capsule default)* | Python logging level for the capsule |
+
+`CODE_OCEAN_DOMAIN` and `CODE_OCEAN_API_TOKEN` can also be set as environment
+variables or in a `.env` file.
+
 ## Output
 
 Results are written to `/root/capsule/results/`:
