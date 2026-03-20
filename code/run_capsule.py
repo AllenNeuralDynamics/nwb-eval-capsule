@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import logging
 import random
@@ -175,6 +176,7 @@ class Config(pydantic_settings.BaseSettings):
         description="If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
     )
 
+
 def write_to_json(data: dict | list[str], path: upath.UPath, prefix: str) -> upath.UPath:
     output_dir = RESULTS_DIR / prefix
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -199,41 +201,48 @@ def _build_file_context() -> str:
     return "\n".join(sections)
 
 
-def write_llm_summaries(model: str, config: Config) -> None:
+def _run_one_eval(category: str, prompt: str, client: anthropic.Anthropic, model: str, file_context: str) -> tuple[str, str | None]:
+    logger.info(f"Generating LLM summary: {category}")
+    message = client.messages.create(
+        model=model,
+        max_tokens=4096,
+        system=SUMMARY_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": f"{prompt}\n\n---\n\n{file_context}"}],
+    )
+    text_blocks = [block.text for block in message.content if isinstance(block, anthropic.types.TextBlock)]
+    if not text_blocks:
+        logger.warning(f"No text in LLM response for {category}")
+        return category, None
+    return category, "\n\n".join(text_blocks)
+
+
+def write_llm_summaries(config: Config) -> None:
     """Use an LLM to evaluate NWB files and write structured summaries."""
     if config.anthropic_api_key is None:
         logger.warning("LLM credentials not found. Skipping LLM summaries.")
         return
-    
+
     file_context = _build_file_context()
     if not file_context.strip():
         logger.warning("No JSON results found to summarize.")
         return
 
     client = anthropic.Anthropic(api_key=config.anthropic_api_key.get_secret_value())
+    summary_dir = RESULTS_DIR / "summary"
+    summary_dir.mkdir(parents=True, exist_ok=True)
 
-    for category, prompt in EVALUATION_PROMPTS.items():
-        logger.info(f"Generating LLM summary: {category}")
-        message = client.messages.create(
-            model=model,
-            max_tokens=4096,
-            system=SUMMARY_SYSTEM_PROMPT,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"{prompt}\n\n---\n\n{file_context}",
-                },
-            ],
-        )
-        text_blocks = [block.text for block in message.content if isinstance(block, anthropic.types.TextBlock)]
-        if not text_blocks:
-            logger.warning(f"No text in LLM response for {category}")
-            continue
-        summary_dir = RESULTS_DIR / "summary"
-        summary_dir.mkdir(parents=True, exist_ok=True)
-        output_path = summary_dir / f"{category}.md"
-        output_path.write_text("\n\n".join(text_blocks))
-        logger.info(f"Wrote summary to {output_path}")
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {
+            executor.submit(_run_one_eval, category, prompt, client, config.llm_model, file_context): category
+            for category, prompt in EVALUATION_PROMPTS.items()
+        }
+        for future in concurrent.futures.as_completed(futures):
+            category, text = future.result()
+            if text is None:
+                continue
+            output_path = summary_dir / f"{category}.md"
+            output_path.write_text(text)
+            logger.info(f"Wrote summary to {output_path}")
 
 
 def main():
@@ -251,7 +260,7 @@ def main():
         logger.info(f"Processing NWB file at path: {path}")
         write_to_json(lazynwb.get_sub_attrs(path, exclude_private=True, exclude_empty=True), path, "attrs")
         write_to_json(list(lazynwb.get_internal_paths(path).keys()), path, "internal_paths")
-    write_llm_summaries(model=config.llm_model, config=config)
+    write_llm_summaries(config=config)
 
 
 if __name__ == "__main__":
