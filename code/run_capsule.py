@@ -158,7 +158,10 @@ def get_nwb_paths_from_attached_assets() -> list[upath.UPath]:
 
 
 class Config(pydantic_settings.BaseSettings):
-    nwb_paths: list[upath.UPath] = pydantic.Field(default_factory=get_nwb_paths_from_attached_assets)
+    nwb_paths: list[upath.UPath] = pydantic.Field(
+        default_factory=get_nwb_paths_from_attached_assets,
+        description="Comma-separated list of S3 paths to NWB files to evaluate. By default, will include all NWB files found in the attached assets.",
+    )
     logging_level: str = "INFO"
     llm_model: str = "claude-sonnet-4-6-20250514"
     anthropic_api_key: pydantic.SecretStr | None = None
