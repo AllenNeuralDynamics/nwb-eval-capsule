@@ -235,7 +235,7 @@ def main():
     for path in config.nwb_paths:
         logger.info(f"Processing NWB file at path: {path}")
         write_to_json(lazynwb.get_sub_attrs(path, exclude_private=True, exclude_empty=True), path, "attrs")
-        write_to_json(lazynwb.get_internal_paths(path), path, "internal_paths")
+        write_to_json(list(lazynwb.get_internal_paths(path).keys()), path, "internal_paths")
     write_llm_summaries(model=config.llm_model, config=config)
 
 
