@@ -1,0 +1,31 @@
+{
+	"version": 1,
+	"named_parameters": true,
+	"parameters": [
+		{
+			"id": "KYwwnGIRZP8sVTEr",
+			"name": "nwb_paths",
+			"param_name": "nwb_paths",
+			"description": "Comma-separated list of S3 paths to NWB files to evaluate. By default, will include all NWB files found in the attached assets.",
+			"help_text": "Comma-separated list of S3 paths to NWB files to evaluate. By default, will include all NWB files found in the attached assets.",
+			"type": "text",
+			"value_type": "string"
+		},
+		{
+			"id": "QiBHxu4KEjRwRQTJ",
+			"name": "llm_model",
+			"param_name": "llm_model",
+			"type": "text",
+			"value_type": "string",
+			"default_value": "claude-sonnet-4-6-20250514"
+		},
+		{
+			"id": "X7MNJzwFMl4iHXlF",
+			"name": "logging_level",
+			"param_name": "logging_level",
+			"type": "text",
+			"value_type": "string",
+			"default_value": "INFO"
+		}
+	]
+}
