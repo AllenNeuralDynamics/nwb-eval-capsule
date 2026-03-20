@@ -136,8 +136,11 @@ Check for:
 4. **Time series alignment**: Whether TimeSeries containers have appropriate timestamps or starting_time + rate attributes (check for presence of these attributes, not their values).
 5. **Proper use of DynamicTable**: Whether tabular data uses DynamicTable with appropriate column descriptions rather than ad-hoc structures.
 6. **Extension usage**: Whether custom neurodata_types (non-core extensions) are clearly identified and whether standard types could have been used instead.
+7. **Naming conventions**: Whether naming follows NWB conventions (e.g., snake_case for user-defined names), `is_` prefix for boolean fields, `_time` suffix for time-related event fields.
 
-Focus on issues that affect interoperability with NWB-compatible analysis tools (e.g., NWBWidgets, pynapple, CaImAn).
+Consult the NWB best practices documentation at https://github.com/NeurodataWithoutBorders/nwbinspector/tree/dev/docs/best_practices or https://nwbinspector.readthedocs.io/en/dev/best_practices/best_practices_index.html
+
+Focus on issues that violate the "law of least surprise" for NWB users and would cause confusion or errors when loading the data with standard NWB tools.
 """,
     "data_completeness": """\
 ## Criterion: Data Completeness & Structural Integrity
