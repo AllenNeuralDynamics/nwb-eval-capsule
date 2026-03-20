@@ -31,7 +31,7 @@ MEDIUM / HIGH / CRITICAL) and actionable recommendations.
 | Parameter | Default | Description |
 |---|---|---|
 | `nwb_paths` | All `.nwb` files in attached assets | Comma-separated list of S3 paths to NWB files to evaluate |
-| `llm_model` | `claude-sonnet-4-6-20250514` | Anthropic model ID to use for evaluation |
+| `llm_model` | `claude-sonnet-4-6` | Anthropic model ID to use for evaluation |
 | `logging_level` | `INFO` | Python logging level |
 | `sample_n_files` | *(all files)* | If set, randomly sample this many NWB files instead of evaluating all |
 
