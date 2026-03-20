@@ -41,20 +41,17 @@ skipped.
 
 ## Launching remotely
 
-Use `code/launch.py` to run the capsule via the Code Ocean API. Requires the
-`codeocean` Python SDK.
+Use `code/launch.py` to run the capsule via the Code Ocean API. The script
+includes inline [uv dependency metadata](https://docs.astral.sh/uv/guides/scripts/#declaring-script-dependencies)
+so it can be run directly with [`uv run`](https://docs.astral.sh/uv/) — no
+prior install needed.
 
 ```bash
 # With S3 paths
-python code/launch.py \
-  --nwb-s3-paths s3://bucket/file1.nwb \
-  --nwb-s3-paths s3://bucket/file2.nwb
+uv run https://raw.githubusercontent.com/AllenNeuralDynamics/nwb-eval-capsule/refs/heads/main/code/launch.py --nwb-s3-paths s3://bucket/file1.nwb s3://bucket/file2.nwb
 
-# With a data asset (mounted at its name)
-python code/launch.py --data-asset-id <asset-id>
-
-# Both
-python code/launch.py --data-asset-id <asset-id> --nwb-s3-paths s3://bucket/extra.nwb
+# With a data asset
+uv run https://raw.githubusercontent.com/AllenNeuralDynamics/nwb-eval-capsule/refs/heads/main/code/launch.py --data-asset-id <asset-id>
 ```
 
 | Parameter | Default | Description |

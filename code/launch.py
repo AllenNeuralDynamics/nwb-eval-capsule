@@ -1,4 +1,11 @@
 """Launch the nwb-eval capsule on Code Ocean with S3 NWB paths or a data asset."""
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#   "codeocean>=0.14.0",
+#   "pydantic-settings>=2.13.1",
+# ]
+# ///
 
 from __future__ import annotations
 
@@ -25,13 +32,14 @@ class LaunchConfig(pydantic_settings.BaseSettings):
         populate_by_name=True,
     )
 
-    codeocean_domain: str = pydantic.Field(
-        alias="code_ocean_domain",
-        description="Code Ocean domain URL, e.g. https://acmecorp.codeocean.com",
-    )
     codeocean_token: pydantic.SecretStr = pydantic.Field(
         alias="code_ocean_api_token",
         description="Code Ocean API access token",
+    )
+    codeocean_domain: str = pydantic.Field(
+        alias="code_ocean_domain",
+        default="https://codeocean.allenneuraldynamics.org",
+        description="Code Ocean domain URL",
     )
     capsule_id: str = pydantic.Field(
         default="dae9c3fd-5893-4082-b78a-a7136a7fd78d",
@@ -39,7 +47,7 @@ class LaunchConfig(pydantic_settings.BaseSettings):
     )
     nwb_s3_paths: list[str] = pydantic.Field(
         default_factory=list,
-        description="S3 paths to NWB files, passed to the capsule as the NWB_PATHS env var",
+        description="S3 paths to NWB files, passed to the capsule as the NWB_PATHS env var. If not provided, a data asset ID must be provided.",
     )
     data_asset_id: str | None = pydantic.Field(
         default=None,
