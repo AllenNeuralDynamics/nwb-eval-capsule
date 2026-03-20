@@ -34,6 +34,7 @@
 			"description": "If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
 			"help_text": "If set, randomly sample this many NWB files from the discovered paths. If None or greater than the number of available files, all files are used.",
 			"type": "text",
+			"default_value": "5",
 			"value_type": "string"
 		}
 	]
