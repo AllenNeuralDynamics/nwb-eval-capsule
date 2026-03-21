@@ -1,4 +1,4 @@
-# hash:sha256:7d65a2189215764e472421324533d7ec6b9a7f6201730b168bb4351ef922a669
+# hash:sha256:3d767a822e86517a502ac515bfc8758989e7a129ea7db08aec6cd822352697b8
 ARG REGISTRY_HOST
 FROM $REGISTRY_HOST/codeocean/mambaforge3:23.1.0-4-python3.10.12-ubuntu22.04
 
@@ -14,5 +14,5 @@ RUN apt-get update \
 RUN pip3 install -U --no-cache-dir \
     anthropic==0.86.0 \
     eval-type-backport==0.3.1 \
-    lazynwb==0.2.83 \
+    lazynwb==0.2.84 \
     pydantic-settings==2.11.0
